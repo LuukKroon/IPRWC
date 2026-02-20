@@ -1,0 +1,69 @@
+<div class="container mx-auto p-4 mt-8">
+  <h1 class="text-3xl font-bold mb-6 text-blue-600">Jouw Winkelmandje</h1>
+
+  <div *ngIf="items.length === 0" class="bg-white p-6 rounded shadow text-center">
+    <p class="text-gray-600 text-xl">Je winkelmandje is leeg.</p>
+    <a routerLink="/" class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded transition">Ga shoppen</a>
+  </div>
+
+  <div *ngIf="items.length > 0" class="bg-white rounded shadow-lg overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse min-w-[600px]">
+        <thead>
+          <tr class="bg-gray-100 border-b text-gray-700">
+            <th class="p-4">Product</th>
+            <th class="p-4">Prijs</th>
+            <th class="p-4 text-center">Aantal</th>
+            <th class="p-4">Totaal</th>
+            <th class="p-4 text-center">Verwijder</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of items" class="border-b hover:bg-gray-50 transition">
+            <td class="p-4 font-semibold text-gray-800">{{ item.product.naam }}</td>
+            
+            <td class="p-4">
+              <div class="flex flex-col">
+                <span *ngIf="item.product.prijs !== getItemPrice(item.product)" class="line-through text-gray-400 text-xs">
+                  € {{ item.product.prijs | number:'1.2-2' }}
+                </span>
+                <span [ngClass]="{'text-red-600 font-bold': item.product.prijs !== getItemPrice(item.product)}">
+                  € {{ getItemPrice(item.product) | number:'1.2-2' }}
+                </span>
+              </div>
+            </td>
+
+            <td class="p-4">
+              <div class="flex items-center justify-center space-x-3">
+                <button (click)="decrease(item)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold w-8 h-8 rounded-full flex items-center justify-center transition">-</button>
+                <span class="w-6 text-center font-bold">{{ item.quantity }}</span>
+                <button (click)="increase(item)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold w-8 h-8 rounded-full flex items-center justify-center transition">+</button>
+              </div>
+            </td>
+
+            <td class="p-4 font-bold text-gray-800">
+              € {{ (getItemPrice(item.product) * item.quantity) | number:'1.2-2' }}
+            </td>
+
+            <td class="p-4 text-center">
+              <button (click)="remove(item)" class="text-red-500 hover:text-red-700 font-bold bg-red-50 hover:bg-red-100 p-2 rounded-full transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="p-6 bg-gray-50 flex flex-col sm:flex-row justify-between items-center border-t">
+      <span class="text-2xl font-bold text-gray-800 mb-4 sm:mb-0">
+        Totaalbedrag: <span class="text-green-600">€ {{ totalPrice | number:'1.2-2' }}</span>
+      </span>
+      <button (click)="goToCheckout()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:scale-105">
+        Afrekenen &rarr;
+      </button>
+    </div>
+  </div>
+</div>

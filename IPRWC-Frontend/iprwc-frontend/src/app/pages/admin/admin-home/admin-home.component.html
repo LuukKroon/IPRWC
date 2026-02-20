@@ -1,0 +1,131 @@
+<div class="container mx-auto p-4 mt-4">
+  <h1 class="text-3xl font-bold mb-6 text-blue-800">Admin Dashboard</h1>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    
+    <div class="lg:col-span-1 space-y-6">
+      
+      <div class="bg-white p-6 rounded shadow-lg border-t-4 border-blue-500">
+        <h2 class="text-xl font-bold mb-4">Categorieën</h2>
+        <div class="flex gap-2 mb-4">
+          <input type="text" [(ngModel)]="newCategory.naam" placeholder="Naam" class="w-full border p-2 rounded">
+          <button (click)="addCategory()" class="bg-blue-600 text-white px-4 rounded hover:bg-blue-700">+</button>
+        </div>
+        <ul class="space-y-2 max-h-48 overflow-y-auto">
+          <li *ngFor="let cat of categories" class="flex justify-between items-center bg-gray-50 p-2 rounded text-sm">
+            <span>{{ cat.naam }}</span>
+            <button (click)="deleteCategory(cat.id!)" class="text-red-500 hover:text-red-700 font-bold">X</button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="bg-white p-6 rounded shadow-lg border-t-4 border-green-500">
+        <h2 class="text-xl font-bold mb-4">Aanbiedingen</h2>
+        <div class="space-y-2 mb-4 text-sm">
+          <select [(ngModel)]="newOffer.productId" class="w-full border p-2 rounded">
+            <option [ngValue]="null">Selecteer Product</option>
+            <option *ngFor="let p of products" [value]="p.id">{{ p.naam }}</option>
+          </select>
+          <div class="flex gap-2">
+            <input type="number" [(ngModel)]="newOffer.kortingsPercentage" placeholder="%" class="w-1/3 border p-2 rounded" title="Percentage">
+            <input type="datetime-local" [(ngModel)]="newOffer.startDatum" class="w-1/3 border p-2 rounded">
+            <input type="datetime-local" [(ngModel)]="newOffer.eindDatum" class="w-1/3 border p-2 rounded">
+          </div>
+          <button (click)="addOffer()" class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">Aanbieding Opslaan</button>
+        </div>
+        <ul class="space-y-2 max-h-48 overflow-y-auto text-sm">
+          <li *ngFor="let offer of offers" class="bg-gray-50 p-2 rounded">
+            <div class="flex justify-between font-bold">
+              <span class="text-green-600">{{ offer.kortingsPercentage }}% op {{ offer.product?.naam }}</span>
+              <button (click)="deleteOffer(offer.id!)" class="text-red-500 hover:text-red-700">X</button>
+            </div>
+            <div class="text-xs text-gray-500">Van: {{ offer.startDatum | date:'short' }} | Tot: {{ offer.eindDatum | date:'short' }}</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lg:col-span-2">
+      <div class="bg-white p-6 rounded shadow-lg border-t-4 border-purple-500">
+        <h2 class="text-xl font-bold mb-4">Producten Beheren</h2>
+
+        <div class="bg-gray-50 p-4 rounded mb-6 border">
+          <h3 class="font-bold mb-2">Nieuw Product Toevoegen</h3>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <input type="text" [(ngModel)]="newProduct.naam" placeholder="Productnaam" class="border p-2 rounded">
+            <input type="number" [(ngModel)]="newProduct.prijs" placeholder="Prijs (€)" class="border p-2 rounded">
+            <input type="text" [(ngModel)]="newProduct.beschrijving" placeholder="Beschrijving" class="border p-2 rounded">
+            
+            <select [(ngModel)]="newProduct.categoryId" class="border p-2 rounded">
+              <option [ngValue]="null">Selecteer Categorie</option>
+              <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.naam }}</option>
+            </select>
+            
+            <input type="file" (change)="onFileSelected($event)" accept="image/*" class="border p-1 bg-white rounded">
+            <button (click)="addProduct()" [disabled]="isLoading" class="bg-purple-600 text-white p-2 rounded hover:bg-purple-700 disabled:bg-gray-400 font-bold">
+              {{ isLoading ? 'Opslaan...' : '+ Product Toevoegen' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto max-h-[500px]">
+          <table class="w-full text-left text-sm border-collapse">
+            <thead>
+              <tr class="bg-gray-100 border-b sticky top-0">
+                <th class="p-2">ID</th>
+                <th class="p-2">Naam</th>
+                <th class="p-2">Categorie</th>
+                <th class="p-2">Prijs</th>
+                <th class="p-2 text-right">Actie</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of products" class="border-b hover:bg-gray-50">
+                <td class="p-2 text-gray-500">#{{ p.id }}</td>
+                <td class="p-2 font-bold">{{ p.naam }}</td>
+                <td class="p-2">{{ p.category?.naam || '-' }}</td>
+                <td class="p-2">€ {{ p.prijs | number:'1.2-2' }}</td>
+                <td class="p-2 text-right">
+                  <button (click)="deleteProduct(p.id)" class="text-white bg-red-500 px-2 py-1 rounded hover:bg-red-700">Verwijder</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white p-6 rounded shadow-lg border-t-4 border-yellow-500 mb-8">
+    <h2 class="text-xl font-bold mb-4 text-gray-800">Alle Bestellingen</h2>
+
+    <div *ngIf="isLoadingOrders" class="text-gray-500">Bestellingen laden...</div>
+
+    <div *ngIf="!isLoadingOrders && orders.length === 0" class="bg-gray-50 p-4 rounded text-center border">
+      <p class="text-gray-500">Er zijn nog geen bestellingen geplaatst in de webshop.</p>
+    </div>
+
+    <div class="overflow-x-auto border border-gray-200 rounded" *ngIf="!isLoadingOrders && orders.length > 0">
+      <table class="w-full text-left text-sm border-collapse">
+        <thead>
+          <tr class="bg-yellow-50 text-yellow-800 border-b">
+            <th class="p-4">Order ID</th>
+            <th class="p-4">Klant (Username)</th>
+            <th class="p-4">Datum</th>
+            <th class="p-4">Bezorgadres</th>
+            <th class="p-4">Totaalprijs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of orders" class="border-b hover:bg-gray-50">
+            <td class="p-4 font-bold">#{{ order.id }}</td>
+            <td class="p-4 text-blue-600">{{ order.user?.username || 'Onbekend' }}</td>
+            <td class="p-4">{{ order.orderDate | date:'short' }}</td>
+            <td class="p-4">{{ order.straat }} {{ order.huisnummer }}, {{ order.stad }}</td>
+            <td class="p-4 font-bold text-green-600">€ {{ order.totalPrice | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

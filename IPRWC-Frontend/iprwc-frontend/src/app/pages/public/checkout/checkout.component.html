@@ -1,0 +1,61 @@
+<div class="container mx-auto p-4 mt-8 flex flex-col md:flex-row gap-8">
+  
+  <div class="md:w-2/3 bg-white p-8 rounded-lg shadow-lg">
+    <h2 class="text-3xl font-bold mb-6 text-blue-600">Bezorggegevens</h2>
+
+    <form (ngSubmit)="placeOrder()" #checkoutForm="ngForm">
+      
+      <div class="flex gap-4 mb-4">
+        <div class="w-3/4">
+          <label class="block text-gray-700 font-bold mb-2">Straat *</label>
+          <input type="text" [(ngModel)]="address.straat" name="straat" required
+                 class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+        </div>
+        <div class="w-1/4">
+          <label class="block text-gray-700 font-bold mb-2">Huisnr *</label>
+          <input type="text" [(ngModel)]="address.huisnummer" name="huisnummer" required
+                 class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+        </div>
+      </div>
+
+      <div class="flex gap-4 mb-8">
+        <div class="w-1/3">
+          <label class="block text-gray-700 font-bold mb-2">Postcode *</label>
+          <input type="text" [(ngModel)]="address.postcode" name="postcode" required
+                 class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+        </div>
+        <div class="w-2/3">
+          <label class="block text-gray-700 font-bold mb-2">Stad *</label>
+          <input type="text" [(ngModel)]="address.stad" name="stad" required
+                 class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="!checkoutForm.form.valid"
+              class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold py-4 rounded shadow-lg transition text-xl transform hover:scale-[1.01]">
+        Bestelling Definitief Plaatsen
+      </button>
+
+    </form>
+  </div>
+
+  <div class="md:w-1/3">
+    <div class="bg-gray-50 p-6 rounded-lg shadow-lg border border-gray-200">
+      <h3 class="text-xl font-bold mb-4 border-b pb-2 text-gray-800">Besteloverzicht</h3>
+      
+      <div class="flex justify-between items-center mb-4 text-lg">
+        <span>Subtotaal:</span>
+        <span class="font-bold">€ {{ totalPrice | number:'1.2-2' }}</span>
+      </div>
+      <div class="flex justify-between items-center mb-4 text-lg text-gray-600">
+        <span>Verzending:</span>
+        <span class="font-bold text-green-600">Gratis</span>
+      </div>
+
+      <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-300 text-2xl text-blue-800">
+        <span class="font-bold">Totaal:</span>
+        <span class="font-black">€ {{ totalPrice | number:'1.2-2' }}</span>
+      </div>
+    </div>
+  </div>
+</div>
